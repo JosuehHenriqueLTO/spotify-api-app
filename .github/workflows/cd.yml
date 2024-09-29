@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   deliver:
     permissions: write-all
@@ -48,6 +49,7 @@ jobs:
           context: .
           push: true
           tags: user/app:latest
+          
   tests:
     runs-on: ubuntu-latest
     steps:

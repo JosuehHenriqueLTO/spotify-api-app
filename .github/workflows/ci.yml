@@ -1,38 +1,63 @@
-name: Continuous Integration
-
+name: Continuous Delivery
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
-    permissions: write-all
+  deliver:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      
-      - name: Python Lint Code Scanning Action
-        uses: advanced-security/python-lint-code-scanning-action@v1.1.1
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv  
+      - name: Execute Python Script
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        run: python path/to/src/main.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          linter: pylint
+          name: my-artifact
+          path: |
+            '**.py'
+            README.md
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: deliver
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4   
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-artifact 
+      - name: Display structure of downloaded files
+        run: ls -R
 
   docker:
     runs-on: ubuntu-latest
+    needs: deliver
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
+      - name: Check out repository code
+        uses: actions/checkout@v4     
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      
+        uses: docker/setup-qemu-action@v3     
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
-      - name: Build
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: false
+          push: true
           tags: user/app:latest
