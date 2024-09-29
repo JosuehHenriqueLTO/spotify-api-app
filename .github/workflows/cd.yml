@@ -6,17 +6,16 @@ on:
 
 jobs:
   deliver:
-    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Simulation CD
+      - name: Simulating CD
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
+          name: my-artifact.zip
           path: |
-            '**.py'
+            **.py
             README.md
 
   deploy:
