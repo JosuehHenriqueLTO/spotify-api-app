@@ -19,14 +19,11 @@ jobs:
             README.md
 
   deploy:
-    permissions: write-all
     runs-on: ubuntu-latest
     needs: deliver
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: my-artifact.zip
       - name: Display structure of downloaded files
