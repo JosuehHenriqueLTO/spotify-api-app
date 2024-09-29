@@ -4,7 +4,7 @@ from src.main import *
 
 class TestSpotifyAPI(unittest.TestCase):
 
-    @patch('your_module.post')
+    @patch('src.main.post')
     def test_get_token(self, mock_post):
         mock_response = Mock()
         mock_response.content = json.dumps({"access_token": "mock_token"}).encode('utf-8')
@@ -22,7 +22,7 @@ class TestSpotifyAPI(unittest.TestCase):
         }
         self.assertEqual(get_auth_header(token), expected_header)
 
-    @patch('your_module.get')
+    @patch('src.main.get')
     def test_search_for_artist(self, mock_get):
         mock_response = Mock()
         mock_response.content = json.dumps({
@@ -40,7 +40,7 @@ class TestSpotifyAPI(unittest.TestCase):
         self.assertEqual(result["name"], "Magyn")
         mock_get.assert_called_once()
 
-    @patch('your_module.get')
+    @patch('src.main.get')
     def test_get_songs_by_artists(self, mock_get):
         mock_response = Mock()
         mock_response.content = json.dumps({
